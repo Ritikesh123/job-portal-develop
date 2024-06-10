@@ -1,0 +1,79 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+
+      - name: Set up .env file
+        run: echo "${{ secrets.DEV_REACT_ENV_VARIABLES }}" > .env
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build React App
+        run: npm run build
+
+      - name: Update Known Hosts
+        run: |
+          mkdir -p $HOME/.ssh
+          ssh-keyscan -t rsa ${{ secrets.DEV_HOST_NAME }} >> $HOME/.ssh/known_hosts
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+
+      - name: Create Private Key File
+        run: |
+          echo "${{ secrets.DEV_SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+
+      - name: SCP to EC2
+        run: |
+          scp -i private_key.pem -r $GITHUB_WORKSPACE/build/ ubuntu@${{ secrets.DEV_HOST_NAME }}:/tmp/
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+
+      - name: SSH into EC2 and Perform File Operations
+        run: |
+          ssh -i private_key.pem ubuntu@${{ secrets.DEV_HOST_NAME }} << 'ENDSSH'
+            # Move build to /var/www/html/
+            sudo mv /tmp/build /var/www/html/
+            
+            # Remove the original build in /tmp/
+            sudo rm -rf /tmp/build
+
+            # Create a timestamp (e.g., current date and time)
+            timestamp=$(date +"%Y%m%d%H%M%S")
+
+            # Rename the previous react-app folder
+            sudo mv /var/www/html/react-app /var/www/html/backups/react-app-$timestamp
+
+            # Rename the build folder
+            sudo mv /var/www/html/build /var/www/html/react-app
+
+            # Keep only the last two backups
+            backup_folders=($(ls -d /var/www/html/backups/react-app-* | sort))
+            num_backups=${#backup_folders[@]}
+            if [[ $num_backups -gt 2 ]]; then
+              for ((i=0; i<num_backups-2; i++)); do
+                sudo rm -rf "${backup_folders[i]}"
+              done
+            fi
+          ENDSSH
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+

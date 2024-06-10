@@ -1,0 +1,7 @@
+# _redirects
+
+# Redirect /api/* to https://deijobs.in/deijobs-api/api/*
+/api/* https://deijobs.in/deijobs-api/api/:splat 200
+
+# Redirect /external/* to https://deijobs.in/deijobs-api/*
+/external/* https://deijobs.in/deijobs-api/:splat 200

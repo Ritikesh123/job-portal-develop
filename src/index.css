@@ -1,0 +1,30 @@
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@200;300;400;500;600;700;800;900&display=swap");
+
+* {
+  font-family: "Lexend", sans-serif;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.right-slider-center-mode .slick-list {
+  padding: 0 50px 0 0 !important;
+}
+
+.swipe-dots {
+  height: 6px;
+  width: 6px;
+  background-color: rgb(156 163 175);
+  border-radius: 50%;
+}
+
+.slick-active .swipe-dots {
+  width: 12px;
+  border-radius: 12px;
+  background-color: black;
+}
+.no-absolute-dots .slick-dots {
+  position: static;
+  margin-top: 16px;
+}

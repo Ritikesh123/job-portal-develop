@@ -1,0 +1,16 @@
+@media (min-width: 768px) {
+  footer {
+    position: sticky;
+    bottom: 0;
+  }
+}
+
+/* CSS for mobile devices */
+@media (max-width: 767px) {
+  footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}

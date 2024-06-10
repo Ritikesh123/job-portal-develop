@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://deijobs.in/deijobs-api/api/:path*"
+    },
+    {
+      "source": "/external:path*",
+      "destination": "https://deijobs.in/deijobs-api/:path*"
+    }
+  ]
+}

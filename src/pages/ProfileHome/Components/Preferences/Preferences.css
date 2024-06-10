@@ -1,0 +1,25 @@
+/* Create custom radio button styles */
+input[type="radio"] {
+  position: relative;
+  padding-left: 30px;
+  cursor: pointer;
+}
+
+/* Style the custom radio button */
+input[type="radio"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  border: 1px solid #c7d2fe; /* Border color */
+  border-radius: 50%; /* Make it round */
+  background-color: white; /* Background color when not checked */
+}
+
+/* Style the custom radio button when it's checked */
+input[type="radio"]:checked::before {
+  background-color: #4338ca; /* Background color when checked */
+}
